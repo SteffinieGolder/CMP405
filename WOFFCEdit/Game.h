@@ -12,6 +12,7 @@
 #include "ChunkObject.h"
 #include "InputCommands.h"
 #include <vector>
+#include "Camera.h"
 
 
 // A basic game implementation that creates a D3D11 device and
@@ -50,6 +51,7 @@ public:
 	void BuildDisplayChunk(ChunkObject *SceneChunk);
 	void SaveDisplayChunk(ChunkObject *SceneChunk);	//saves geometry et al
 	void ClearDisplayList();
+	int MousePicking();
 
 #ifdef DXTK_AUDIO
 	void NewAudioDevice();
@@ -69,17 +71,6 @@ private:
 	DisplayChunk						m_displayChunk;
 	InputCommands						m_InputCommands;
 
-	//functionality
-	float								m_movespeed;
-
-	//camera
-	DirectX::SimpleMath::Vector3		m_camPosition;
-	DirectX::SimpleMath::Vector3		m_camOrientation;
-	DirectX::SimpleMath::Vector3		m_camLookAt;
-	DirectX::SimpleMath::Vector3		m_camLookDirection;
-	DirectX::SimpleMath::Vector3		m_camRight;
-	float m_camRotRate;
-
 	//control variables
 	bool m_grid;							//grid rendering on / off
 	// Device resources.
@@ -91,6 +82,7 @@ private:
     // Input devices.
     std::unique_ptr<DirectX::GamePad>       m_gamePad;
     std::unique_ptr<DirectX::Keyboard>      m_keyboard;
+	std::unique_ptr<Camera>					m_camera;
     std::unique_ptr<DirectX::Mouse>         m_mouse;
 
     // DirectXTK objects.
@@ -102,6 +94,7 @@ private:
     std::unique_ptr<DirectX::PrimitiveBatch<DirectX::VertexPositionColor>>  m_batch;
     std::unique_ptr<DirectX::SpriteBatch>                                   m_sprites;
     std::unique_ptr<DirectX::SpriteFont>                                    m_font;
+	RECT																	m_ScreenDimensions;
 
 #ifdef DXTK_AUDIO
     std::unique_ptr<DirectX::AudioEngine>                                   m_audEngine;
@@ -123,7 +116,7 @@ private:
 #endif
 
     DirectX::SimpleMath::Matrix                                             m_world;
-    DirectX::SimpleMath::Matrix                                             m_view;
+    //DirectX::SimpleMath::Matrix                                             m_view;
     DirectX::SimpleMath::Matrix                                             m_projection;
 
 
