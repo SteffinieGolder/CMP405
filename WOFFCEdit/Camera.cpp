@@ -33,6 +33,8 @@ Camera::Camera()
 	m_camOrientation.x = 0.0f;
 	m_camOrientation.y = 0.0f;
 	m_camOrientation.z = 0.0f;
+
+	m_selectedObj = NULL;
 }
 
 Camera::~Camera()
@@ -104,9 +106,21 @@ void Camera::Update(DX::StepTimer const& timer)
 		m_camPosition -= m_camRight * m_moveSpeed;
 	}
 
+	if (m_inputCommands->focusOnSelected)
+	{
+		if (m_selectedObj)
+		{
+			DirectX::SimpleMath::Vector3 pos = m_camPosition;
+			pos2 = m_camPosition;
+
+			pos2 += (m_selectedObj->m_position - m_camLookAt);
+			pos2 += (pos2 - m_selectedObj->m_position) * 1.5;
+			m_camPosition = DirectX::XMVectorLerp(pos, pos2, 0.2f);
+		}
+	}
+
 	//update lookat point
 	m_camLookAt = m_camPosition + m_camLookDirection;
-
 	//apply camera vectors
 	m_viewMatrix = Matrix::CreateLookAt(m_camPosition, m_camLookAt, Vector3::UnitY);
 }
@@ -124,4 +138,13 @@ DirectX::SimpleMath::Matrix Camera::GetCameraViewMatrix()
 DirectX::SimpleMath::Vector3 Camera::GetCameraPosition() 
 {
 	return m_camPosition;
+}
+
+void Camera::SetFocusObject(DisplayObject* selectedObject)
+{
+	m_selectedObj = selectedObject;
+}
+DirectX::SimpleMath::Vector3 Camera::GetPos2()
+{
+	return pos2;
 }

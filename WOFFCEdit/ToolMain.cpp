@@ -22,6 +22,7 @@ ToolMain::ToolMain()
 	m_toolInputCommands.mousePosX = 0;
 	m_toolInputCommands.mousePosY = 0;
 	m_toolInputCommands.mouse_LB_Down = false;
+	m_toolInputCommands.focusOnSelected = false;
 }
 
 
@@ -361,6 +362,12 @@ void ToolMain::UpdateInput(MSG * msg)
 		m_toolInputCommands.right = true;
 	}
 	else m_toolInputCommands.right = false;
+
+	if (m_keyArray['F'])
+	{
+		m_toolInputCommands.focusOnSelected = true;
+	}
+	else m_toolInputCommands.focusOnSelected = false;
 
 	/*
 	* //rotation
