@@ -167,9 +167,11 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ChunkObject.cpp" />
+    <ClCompile Include="CreateObjectDialogue.cpp" />
     <ClCompile Include="DeviceResources.cpp" />
     <ClCompile Include="DisplayChunk.cpp" />
     <ClCompile Include="DisplayObject.cpp" />
+    <ClCompile Include="EditObjectDialogue.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MFCFrame.cpp" />
@@ -184,9 +186,11 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ChunkObject.h" />
+    <ClInclude Include="CreateObjectDialogue.h" />
     <ClInclude Include="DeviceResources.h" />
     <ClInclude Include="DisplayChunk.h" />
     <ClInclude Include="DisplayObject.h" />
+    <ClInclude Include="EditObjectDialogue.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="InputCommands.h" />
     <ClInclude Include="MFCFrame.h" />

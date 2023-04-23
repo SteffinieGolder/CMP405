@@ -63,16 +63,6 @@ void Camera::Update(DX::StepTimer const& timer)
 		{
 			m_camOrientation.x = -90.0f;
 		}
-
-		if (m_camOrientation.y > 360.0f)
-		{
-			m_camOrientation.y -= 360.0f;
-		}
-
-		if (m_camOrientation.y < 0.0f)
-		{
-			m_camOrientation.y += 360.0f;
-		}
 	}
 
 	//create look direction from Euler angles in m_camOrientation
@@ -106,17 +96,25 @@ void Camera::Update(DX::StepTimer const& timer)
 		m_camPosition -= m_camRight * m_moveSpeed;
 	}
 
+
 	if (m_inputCommands->focusOnSelected)
 	{
 		if (m_selectedObj)
 		{
-			DirectX::SimpleMath::Vector3 pos = m_camPosition;
-			pos2 = m_camPosition;
+			DirectX::SimpleMath::Vector3 initialPos = m_camPosition;
+			DirectX::SimpleMath::Vector3 focusPos;
+			float distance = 1.5f;
 
-			pos2 += (m_selectedObj->m_position - m_camLookAt);
-			pos2 += (pos2 - m_selectedObj->m_position) * 1.5;
-			m_camPosition = DirectX::XMVectorLerp(pos, pos2, 0.2f);
+			focusPos = initialPos + (m_selectedObj->m_position - m_camLookAt);
+			focusPos += (focusPos - m_selectedObj->m_position) * distance;
+
+			m_camPosition = DirectX::XMVectorLerp(initialPos, focusPos, 0.2f);
 		}
+	}
+
+	if (m_camPosition.y < 1.0f)
+	{
+		m_camPosition.y = 1.0f;
 	}
 
 	//update lookat point
@@ -143,8 +141,4 @@ DirectX::SimpleMath::Vector3 Camera::GetCameraPosition()
 void Camera::SetFocusObject(DisplayObject* selectedObject)
 {
 	m_selectedObj = selectedObject;
-}
-DirectX::SimpleMath::Vector3 Camera::GetPos2()
-{
-	return pos2;
 }

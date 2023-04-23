@@ -17,7 +17,6 @@ public:
 	DirectX::SimpleMath::Matrix GetCameraViewMatrix();
 	DirectX::SimpleMath::Vector3 GetCameraPosition();
 	void SetFocusObject(DisplayObject* selectedObject);
-	DirectX::SimpleMath::Vector3 GetPos2();
 
 private:
 	float m_moveSpeed;
@@ -28,9 +27,6 @@ private:
 	DirectX::SimpleMath::Vector3 m_camLookAt;
 	DirectX::SimpleMath::Vector3 m_camLookDirection;
 	DirectX::SimpleMath::Vector3 m_camRight;
-	DirectX::SimpleMath::Vector3 pos;
-	DirectX::SimpleMath::Vector3 pos2;
-
 
 	DirectX::SimpleMath::Matrix m_viewMatrix;
 

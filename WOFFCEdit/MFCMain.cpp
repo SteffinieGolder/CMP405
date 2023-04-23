@@ -6,6 +6,8 @@ BEGIN_MESSAGE_MAP(MFCMain, CWinApp)
 	ON_COMMAND(ID_FILE_QUIT,	&MFCMain::MenuFileQuit)
 	ON_COMMAND(ID_FILE_SAVETERRAIN, &MFCMain::MenuFileSaveTerrain)
 	ON_COMMAND(ID_EDIT_SELECT, &MFCMain::MenuEditSelect)
+	ON_COMMAND(ID_OBJECT_CREATEOBJECT, &MFCMain::MenuObjectCreateObject)
+	ON_COMMAND(ID_OBJECT_EDITOBJECTPROPERTIES, &MFCMain::MenuObjectEditObject)
 	ON_COMMAND(ID_BUTTON40001,	&MFCMain::ToolBarButton1)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_TOOL, &CMyFrame::OnUpdatePage)
 END_MESSAGE_MAP()
@@ -109,6 +111,17 @@ void MFCMain::ToolBarButton1()
 	m_ToolSystem.onActionSave();
 }
 
+void MFCMain::MenuObjectCreateObject()
+{
+	m_createObjectDialogue.Create(IDD_DIALOG2);	//Start up modeless
+	m_createObjectDialogue.ShowWindow(SW_SHOW);	//show modeless
+}
+
+void MFCMain::MenuObjectEditObject()
+{
+	m_editObjectDialogue.Create(IDD_DIALOG3);	//Start up modeless
+	m_editObjectDialogue.ShowWindow(SW_SHOW);	//show modeless
+}
 
 MFCMain::MFCMain()
 {

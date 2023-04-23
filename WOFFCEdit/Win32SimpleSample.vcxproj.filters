@@ -60,6 +60,12 @@
       <Filter>MFC</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CreateObjectDialogue.cpp">
+      <Filter>MFC</Filter>
+    </ClCompile>
+    <ClCompile Include="EditObjectDialogue.cpp">
+      <Filter>MFC</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DeviceResources.h">
@@ -110,6 +116,12 @@
       <Filter>MFC</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CreateObjectDialogue.h">
+      <Filter>MFC</Filter>
+    </ClInclude>
+    <ClInclude Include="EditObjectDialogue.h">
+      <Filter>MFC</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
