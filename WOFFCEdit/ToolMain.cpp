@@ -281,6 +281,11 @@ void ToolMain::onActionSaveTerrain()
 	m_d3dRenderer.SaveDisplayChunk(&m_chunk);
 }
 
+void ToolMain::UpdateSceneGraph()
+{
+	m_d3dRenderer.BuildDisplayList(&m_sceneGraph);
+}
+
 void ToolMain::Tick(MSG *msg)
 {
 	//do we have a selection

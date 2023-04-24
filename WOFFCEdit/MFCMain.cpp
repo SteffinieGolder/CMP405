@@ -121,6 +121,7 @@ void MFCMain::MenuObjectEditObject()
 {
 	m_editObjectDialogue.Create(IDD_DIALOG3);	//Start up modeless
 	m_editObjectDialogue.ShowWindow(SW_SHOW);	//show modeless
+	m_editObjectDialogue.SetObjectData(&m_ToolSystem.m_sceneGraph, &m_ToolSystem.m_selectedObject, &m_ToolSystem);
 }
 
 MFCMain::MFCMain()

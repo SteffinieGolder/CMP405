@@ -2,6 +2,10 @@
 #include "afxdialogex.h"
 #include "resource.h"
 #include "afxwin.h"
+#include <vector>
+#include <string>
+#include "SceneObject.h"
+#include "ToolMain.h"
 
 class EditObjectDialogue : public CDialogEx
 {
@@ -20,16 +24,36 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	afx_msg void End();		//kill the dialogue
 	afx_msg void EditObject();
+	afx_msg void SelectModel();	//Item has been selected
+	afx_msg void SelectTexture();	//Item has been selected
+
+	std::vector<std::wstring> m_availableTextures;
+	std::vector<std::wstring> m_availableModels;
+	std::vector<SceneObject>* m_sceneGraph;
+	int* m_selectedObjectID;
+	std::wstring texChoice;
+	std::wstring modelChoice;
+	SceneObject* selectedObj;
+	ToolMain* m_toolObject;
 
 
 	DECLARE_MESSAGE_MAP()
 public:
 	// Control variable for more efficient access of the listbox
-	//CListBox m_listBox;
+	CListBox m_texListBox;
+	CListBox m_modelListBox;
+	CListBox m_selectIDBox;
+
 	virtual BOOL OnInitDialog() override;
 	virtual void PostNcDestroy();
+	virtual void SetObjectData(std::vector<SceneObject>* SceneGraph, int* selectedItem, ToolMain* tool);
 	afx_msg void OnBnClickedOk();
+	afx_msg void OnBnClickedChngModel();
+	afx_msg void OnBnClickedChngTex();
+
 	//afx_msg void OnLbnSelchangeList1();
+
+	afx_msg void OnBnClickedCancel();
 };
 
 
