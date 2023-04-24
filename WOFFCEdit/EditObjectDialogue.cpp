@@ -68,7 +68,7 @@ void EditObjectDialogue::SetObjectData(std::vector<SceneObject>* SceneGraph, int
 
 		if (currentID == *m_selectedObjectID)
 		{
-			selectedObj = &(m_sceneGraph->at(i));
+			selectedObj = &(m_sceneGraph->at(i+1));
 		}
 	}
 }
@@ -77,6 +77,7 @@ void EditObjectDialogue::End()
 {
 	modelChoice.clear();
 	texChoice.clear();
+	selectedObj = NULL;
 	DestroyWindow();	//destory the window properly.  INcluding the links and pointers created.  THis is so the dialogue can start again. 
 }
 
@@ -87,6 +88,7 @@ void EditObjectDialogue::EditObject()
 		if (modelChoice.size() != 0)
 		{
 			selectedObj->model_path = std::string(modelChoice.begin(), modelChoice.end());
+			
 		}
 
 		if (texChoice.size() != 0)
