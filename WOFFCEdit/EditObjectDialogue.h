@@ -35,6 +35,7 @@ protected:
 	std::wstring modelChoice;
 	SceneObject* selectedObj;
 	ToolMain* m_toolObject;
+	CWnd* pWnd;
 
 
 	DECLARE_MESSAGE_MAP()
@@ -44,16 +45,18 @@ public:
 	CListBox m_modelListBox;
 	CListBox m_selectIDBox;
 
+	float positionX, positionY, positionZ, rotateX, rotateY, rotateZ,
+		scaleX, scaleY, scaleZ;
+
 	virtual BOOL OnInitDialog() override;
 	virtual void PostNcDestroy();
 	virtual void SetObjectData(std::vector<SceneObject>* SceneGraph, int* selectedItem, ToolMain* tool);
 	afx_msg void OnBnClickedOk();
-	afx_msg void OnBnClickedChngModel();
-	afx_msg void OnBnClickedChngTex();
-
-	//afx_msg void OnLbnSelchangeList1();
-
 	afx_msg void OnBnClickedCancel();
+
+	//afx_msg void OnBnClickedChngModel();
+	//afx_msg void OnBnClickedChngTex();
+	//afx_msg void OnLbnSelchangeList1();
 };
 
 
