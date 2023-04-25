@@ -39,8 +39,11 @@ private:
 	afx_msg void MenuFileSaveTerrain();
 	afx_msg void MenuEditSelect();
 	afx_msg	void ToolBarButton1();
-	afx_msg	void MenuObjectCreateObject();
 	afx_msg	void MenuObjectEditObject();
+	afx_msg	void MenuObjectCreateBox();
+	afx_msg	void MenuObjectCreateCup();
+
+	void MenuObjectCreateObject(std::string* modelPath, std::string* texPath);
 
 
 	DECLARE_MESSAGE_MAP()	// required macro for message map functionality  One per class

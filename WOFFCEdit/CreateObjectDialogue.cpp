@@ -21,7 +21,7 @@ END_MESSAGE_MAP()
 }*/
 
 CreateObjectDialogue::CreateObjectDialogue(CWnd* pParent)			//constructor used in modeless
-	: CDialogEx(IDD_DIALOG2, pParent)
+	: CDialogEx(IDD_DIALOG1, pParent)
 {
 }
 

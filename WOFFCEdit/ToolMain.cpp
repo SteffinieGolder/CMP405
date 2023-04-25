@@ -276,14 +276,172 @@ void ToolMain::onActionSave()
 	MessageBox(NULL, L"Objects Saved", L"Notification", MB_OK);
 }
 
+void ToolMain::onActionCreateObject(std::string* modelPath, std::string* textPath)
+{
+	int rc;
+	char* ErrMSG = 0;
+	sqlite3_stmt* pResults;								//results of the query
+
+	int numObjects = m_sceneGraph.size() + 1;				//Loop thru the scene graph.
+
+	std::stringstream command3;
+	command3 << "INSERT INTO Objects "
+		<< "VALUES(" << numObjects << ","
+		<< 0						 << ","
+		<< *modelPath << ","
+		<< *textPath << ","
+		<< numObjects << ","
+		<< 1 << ","
+		<< numObjects << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 1 << ","
+		<< 1 << ","
+		<< 1 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< "'" << "'" << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 1 << ","
+		<< 1 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< "'" << "'" << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< "'Name'" << ","
+
+		<< 0 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 0 << ","
+		<< 0
+
+		<< ")";
+
+	std::string sqlCommand3 = command3.str();		//Get the command
+	rc = sqlite3_prepare_v2(m_databaseConnection, sqlCommand3.c_str(), -1, &pResults, 0);		//Prepare database with new data
+	sqlite3_step(pResults);
+
+	UpdateSceneGraph();
+}
+
 void ToolMain::onActionSaveTerrain()
 {
 	m_d3dRenderer.SaveDisplayChunk(&m_chunk);
 }
 
-void ToolMain::UpdateSceneGraph()
+void ToolMain::UpdateDisplayList()
 {
 	m_d3dRenderer.BuildDisplayList(&m_sceneGraph);
+}
+
+void ToolMain::UpdateSceneGraph()
+{
+	//SQL
+	int rc;
+	char* sqlCommand;
+	char* ErrMSG = 0;
+	sqlite3_stmt* pResults;								//results of the query
+	sqlite3_stmt* pResultsChunk;
+
+	sqlCommand = "SELECT * from Objects WHERE   ID = (SELECT MAX(ID) from Objects);";		//Select the last entry from database
+	//Send Command and fill result object
+	rc = sqlite3_prepare_v2(m_databaseConnection, sqlCommand, -1, &pResults, 0);			//Fill result object with last entry
+	while (sqlite3_step(pResults) == SQLITE_ROW)											//Last entry's row
+	{
+		SceneObject newSceneObject;															//Create Object from database entries
+		newSceneObject.ID = sqlite3_column_int(pResults, 0);
+		newSceneObject.chunk_ID = sqlite3_column_int(pResults, 1);
+		newSceneObject.model_path = reinterpret_cast<const char*>(sqlite3_column_text(pResults, 2));
+		newSceneObject.tex_diffuse_path = reinterpret_cast<const char*>(sqlite3_column_text(pResults, 3));
+		newSceneObject.posX = sqlite3_column_double(pResults, 4);
+		newSceneObject.posY = sqlite3_column_double(pResults, 5);
+		newSceneObject.posZ = sqlite3_column_double(pResults, 6);
+		newSceneObject.rotX = sqlite3_column_double(pResults, 7);
+		newSceneObject.rotY = sqlite3_column_double(pResults, 8);
+		newSceneObject.rotZ = sqlite3_column_double(pResults, 9);
+		newSceneObject.scaX = sqlite3_column_double(pResults, 10);
+		newSceneObject.scaY = sqlite3_column_double(pResults, 11);
+		newSceneObject.scaZ = sqlite3_column_double(pResults, 12);
+		newSceneObject.render = sqlite3_column_int(pResults, 13);
+		newSceneObject.collision = sqlite3_column_int(pResults, 14);
+		newSceneObject.collision_mesh = reinterpret_cast<const char*>(sqlite3_column_text(pResults, 15));
+		newSceneObject.collectable = sqlite3_column_int(pResults, 16);
+		newSceneObject.destructable = sqlite3_column_int(pResults, 17);
+		newSceneObject.health_amount = sqlite3_column_int(pResults, 18);
+		newSceneObject.editor_render = sqlite3_column_int(pResults, 19);
+		newSceneObject.editor_texture_vis = sqlite3_column_int(pResults, 20);
+		newSceneObject.editor_normals_vis = sqlite3_column_int(pResults, 21);
+		newSceneObject.editor_collision_vis = sqlite3_column_int(pResults, 22);
+		newSceneObject.editor_pivot_vis = sqlite3_column_int(pResults, 23);
+		newSceneObject.pivotX = sqlite3_column_double(pResults, 24);
+		newSceneObject.pivotY = sqlite3_column_double(pResults, 25);
+		newSceneObject.pivotZ = sqlite3_column_double(pResults, 26);
+		newSceneObject.snapToGround = sqlite3_column_int(pResults, 27);
+		newSceneObject.AINode = sqlite3_column_int(pResults, 28);
+		newSceneObject.audio_path = reinterpret_cast<const char*>(sqlite3_column_text(pResults, 29));
+		newSceneObject.volume = sqlite3_column_double(pResults, 30);
+		newSceneObject.pitch = sqlite3_column_double(pResults, 31);
+		newSceneObject.pan = sqlite3_column_int(pResults, 32);
+		newSceneObject.one_shot = sqlite3_column_int(pResults, 33);
+		newSceneObject.play_on_init = sqlite3_column_int(pResults, 34);
+		newSceneObject.play_in_editor = sqlite3_column_int(pResults, 35);
+		newSceneObject.min_dist = sqlite3_column_double(pResults, 36);
+		newSceneObject.max_dist = sqlite3_column_double(pResults, 37);
+		newSceneObject.camera = sqlite3_column_int(pResults, 38);
+		newSceneObject.path_node = sqlite3_column_int(pResults, 39);
+		newSceneObject.path_node_start = sqlite3_column_int(pResults, 40);
+		newSceneObject.path_node_end = sqlite3_column_int(pResults, 41);
+		newSceneObject.parent_id = sqlite3_column_int(pResults, 42);
+		newSceneObject.editor_wireframe = sqlite3_column_int(pResults, 43);
+		newSceneObject.name = reinterpret_cast<const char*>(sqlite3_column_text(pResults, 44));
+
+		newSceneObject.light_type = sqlite3_column_int(pResults, 45);
+		newSceneObject.light_diffuse_r = sqlite3_column_double(pResults, 46);
+		newSceneObject.light_diffuse_g = sqlite3_column_double(pResults, 47);
+		newSceneObject.light_diffuse_b = sqlite3_column_double(pResults, 48);
+		newSceneObject.light_specular_r = sqlite3_column_double(pResults, 49);
+		newSceneObject.light_specular_g = sqlite3_column_double(pResults, 50);
+		newSceneObject.light_specular_b = sqlite3_column_double(pResults, 51);
+		newSceneObject.light_spot_cutoff = sqlite3_column_double(pResults, 52);
+		newSceneObject.light_constant = sqlite3_column_double(pResults, 53);
+		newSceneObject.light_linear = sqlite3_column_double(pResults, 54);
+		newSceneObject.light_quadratic = sqlite3_column_double(pResults, 55);
+
+		//send completed object to scenegraph
+		m_sceneGraph.push_back(newSceneObject);
+	}
+	//Process REsults into renderable
+	m_d3dRenderer.BuildDisplayList(&m_sceneGraph);
+
 }
 
 void ToolMain::Tick(MSG *msg)

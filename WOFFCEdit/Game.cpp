@@ -341,6 +341,9 @@ void Game::BuildDisplayList(std::vector<SceneObject> * SceneGraph)
 		
 		//create a temp display object that we will populate then append to the display list.
 		DisplayObject newDisplayObject;
+
+        //Set ID
+        newDisplayObject.m_ID = SceneGraph->at(i).ID;
 		
 		//load model
 		std::wstring modelwstr = StringToWCHART(SceneGraph->at(i).model_path);							//convect string to Wchar
@@ -466,7 +469,7 @@ int Game::MousePicking()
                 if (closestDistance > pickedDistance)
                 {
                     closestDistance = pickedDistance;
-                    selectedID = i;
+                    selectedID = m_displayList[i].m_ID;
                 }
             }
         }
@@ -474,7 +477,13 @@ int Game::MousePicking()
 
     if (selectedID != -1)
     {
-        m_camera->SetFocusObject(&m_displayList[selectedID]);
+        for (int j = 0; j < m_displayList.size(); j++)
+        {
+            if (m_displayList[j].m_ID == selectedID)
+            {
+                m_camera->SetFocusObject(&m_displayList[j]);
+            }
+        }
     }
 
     //if we got a hit.  return it.  

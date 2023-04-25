@@ -6,7 +6,8 @@ BEGIN_MESSAGE_MAP(MFCMain, CWinApp)
 	ON_COMMAND(ID_FILE_QUIT,	&MFCMain::MenuFileQuit)
 	ON_COMMAND(ID_FILE_SAVETERRAIN, &MFCMain::MenuFileSaveTerrain)
 	ON_COMMAND(ID_EDIT_SELECT, &MFCMain::MenuEditSelect)
-	ON_COMMAND(ID_OBJECT_CREATEOBJECT, &MFCMain::MenuObjectCreateObject)
+	ON_COMMAND(ID_CREATEOBJECT_BOX, &MFCMain::MenuObjectCreateBox)
+	ON_COMMAND(ID_CREATEOBJECT_CUP, &MFCMain::MenuObjectCreateCup)
 	ON_COMMAND(ID_OBJECT_EDITOBJECTPROPERTIES, &MFCMain::MenuObjectEditObject)
 	ON_COMMAND(ID_BUTTON40001,	&MFCMain::ToolBarButton1)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_TOOL, &CMyFrame::OnUpdatePage)
@@ -111,10 +112,29 @@ void MFCMain::ToolBarButton1()
 	m_ToolSystem.onActionSave();
 }
 
-void MFCMain::MenuObjectCreateObject()
+void MFCMain::MenuObjectCreateBox()
 {
-	m_createObjectDialogue.Create(IDD_DIALOG2);	//Start up modeless
-	m_createObjectDialogue.ShowWindow(SW_SHOW);	//show modeless
+	std::string objStr = "'database/data/placeholder.cmo'";
+	std::string texStr = "'database/data/placeholder.dds'";
+
+	MenuObjectCreateObject(&objStr, &texStr);
+
+}
+
+void MFCMain::MenuObjectCreateCup()
+{
+	std::string objStr2 = "'database/data/cup._obj.cmo'";
+	std::string texStr2 = "'database/data/cup.dds'";
+
+	MenuObjectCreateObject(&objStr2, &texStr2);
+}
+
+
+void MFCMain::MenuObjectCreateObject(std::string* modelPath, std::string* texPath)
+{
+	//Add object 
+	m_ToolSystem.onActionCreateObject(modelPath, texPath);
+
 }
 
 void MFCMain::MenuObjectEditObject()

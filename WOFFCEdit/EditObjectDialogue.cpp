@@ -68,7 +68,7 @@ void EditObjectDialogue::SetObjectData(std::vector<SceneObject>* SceneGraph, int
 
 		if (currentID == *m_selectedObjectID)
 		{
-			selectedObj = &(m_sceneGraph->at(i+1));
+			selectedObj = &(m_sceneGraph->at(i));
 		}
 	}
 	
@@ -215,7 +215,7 @@ void EditObjectDialogue::EditObject()
 			selectedObj->scaZ = scaleZ;
 		}
 
-		m_toolObject->UpdateSceneGraph();
+		m_toolObject->UpdateDisplayList();
 	}
 
 	End();
