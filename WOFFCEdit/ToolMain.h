@@ -23,6 +23,7 @@ public: //methods
 	void	onActionCreateObject(std::string* modelPath, std::string* textPath);
 	void	UpdateSceneGraph();
 	void    UpdateDisplayList();
+	bool	ShouldSelectMultiple();
 	afx_msg	void	onActionSave();											//save the current chunk
 	afx_msg void	onActionSaveTerrain();									//save chunk geometry
 
@@ -30,9 +31,10 @@ public: //methods
 	void	UpdateInput(MSG *msg);
 
 public:	//variables
-	std::vector<SceneObject>    m_sceneGraph;	//our scenegraph storing all the objects in the current chunk
-	ChunkObject					m_chunk;		//our landscape chunk
-	int m_selectedObject;						//ID of current Selection
+	std::vector<SceneObject>    m_sceneGraph;								//our scenegraph storing all the objects in the current chunk
+	ChunkObject					m_chunk;									//our landscape chunk
+	int							m_selectedObject;							//IDs of selections
+	std::vector<int>			m_selectedObjects;							//IDs of selections
 
 private:	//methods
 	void	onContentAdded();

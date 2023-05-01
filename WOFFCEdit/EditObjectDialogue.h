@@ -22,6 +22,11 @@ public:
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+	virtual void ProcessSingleObject();
+	virtual void ProcessMultipleObjects();
+	virtual void EditSingleObject();
+	virtual void EditMultipleObjects();
+
 	afx_msg void End();		//kill the dialogue
 	afx_msg void EditObject();
 	afx_msg void SelectModel();	//Item has been selected
@@ -30,12 +35,15 @@ protected:
 	std::vector<std::wstring> m_availableTextures;
 	std::vector<std::wstring> m_availableModels;
 	std::vector<SceneObject>* m_sceneGraph;
+	std::vector<int>* m_selectedObjectIDs;
+	std::vector<SceneObject>* m_selectedObjects;
 	int* m_selectedObjectID;
+	SceneObject* m_selectedObject;
 	std::wstring texChoice;
 	std::wstring modelChoice;
-	SceneObject* selectedObj;
 	ToolMain* m_toolObject;
 	CWnd* pWnd;
+
 
 
 	DECLARE_MESSAGE_MAP()
@@ -50,7 +58,7 @@ public:
 
 	virtual BOOL OnInitDialog() override;
 	virtual void PostNcDestroy();
-	virtual void SetObjectData(std::vector<SceneObject>* SceneGraph, int* selectedItem, ToolMain* tool);
+	virtual void SetObjectData(ToolMain* tool);
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
 

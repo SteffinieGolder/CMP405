@@ -13,7 +13,7 @@ struct InputCommands
 	int prevMouseY;
 	bool mouse_LB_Down;
 	bool focusOnSelected;
-
+	bool selectMultiple;
 	/*bool rotRight;
 	bool rotLeft;*/
 };

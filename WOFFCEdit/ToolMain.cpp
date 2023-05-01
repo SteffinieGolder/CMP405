@@ -23,6 +23,7 @@ ToolMain::ToolMain()
 	m_toolInputCommands.mousePosY = 0;
 	m_toolInputCommands.mouse_LB_Down = false;
 	m_toolInputCommands.focusOnSelected = false;
+	m_toolInputCommands.selectMultiple = false;
 }
 
 
@@ -456,9 +457,18 @@ void ToolMain::Tick(MSG *msg)
 
 	if (m_toolInputCommands.mouse_LB_Down)
 	{
-		m_selectedObject = m_d3dRenderer.MousePicking();
+		if (m_toolInputCommands.selectMultiple)
+		{
+			m_selectedObjects.push_back(m_d3dRenderer.MousePicking());
+		}
+
+		else {
+			m_selectedObject = m_d3dRenderer.MousePicking();
+		}
+
 		m_toolInputCommands.mouse_LB_Down = false;
 	}
+
 
 	//Renderer Update Call
 	m_d3dRenderer.Tick(&m_toolInputCommands);
@@ -547,4 +557,9 @@ void ToolMain::UpdateInput(MSG * msg)
 	*/
 
 	//WASD
+}
+
+bool ToolMain::ShouldSelectMultiple()
+{
+	return m_toolInputCommands.selectMultiple;
 }

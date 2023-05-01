@@ -41,14 +41,10 @@ void EditObjectDialogue::DoDataExchange(CDataExchange* pDX)
 }
 
 ///pass through pointers to the data in the tool we want to manipulate
-void EditObjectDialogue::SetObjectData(std::vector<SceneObject>* SceneGraph, int* selectedItem, ToolMain* tool)
+void EditObjectDialogue::SetObjectData(ToolMain* tool)
 {
-	m_selectedObjectID = selectedItem;
-	m_sceneGraph = SceneGraph;
 	m_toolObject = tool;
-
-	std::wstring listBoxEntry = std::to_wstring(*m_selectedObjectID);
-	m_selectIDBox.AddString(listBoxEntry.c_str());
+	m_sceneGraph = &m_toolObject->m_sceneGraph;
 
 	for (int i = 0; i < m_availableTextures.size(); i++)
 	{
@@ -62,45 +58,81 @@ void EditObjectDialogue::SetObjectData(std::vector<SceneObject>* SceneGraph, int
 		m_modelListBox.AddString(listBoxEntry.c_str());
 	}
 
+	if (m_toolObject->ShouldSelectMultiple())
+	{
+		m_selectedObjectIDs = &m_toolObject->m_selectedObjects;
+		ProcessMultipleObjects();
+		
+	}
+
+	else {
+		m_selectedObjectID = &m_toolObject->m_selectedObject;
+		ProcessSingleObject();
+	}
+}
+
+void EditObjectDialogue::ProcessSingleObject()
+{
+	std::wstring listBoxEntry = std::to_wstring(*m_selectedObjectID);
+	m_selectIDBox.AddString(listBoxEntry.c_str());
+
 	for (int i = 0; i < m_sceneGraph->size(); i++)
 	{
 		int currentID = (m_sceneGraph->at(i).ID);
 
 		if (currentID == *m_selectedObjectID)
 		{
-			selectedObj = &(m_sceneGraph->at(i));
+			m_selectedObject = &m_sceneGraph->at(i);
+			break;
 		}
 	}
-	
-	if (selectedObj)
+
+	if (m_selectedObject)
 	{
 		pWnd = GetDlgItem(IDC_POSX);
-		pWnd->SetWindowText(std::to_wstring(selectedObj->posX).c_str());
+		pWnd->SetWindowText(std::to_wstring(m_selectedObject->posX).c_str());
 
 		pWnd = GetDlgItem(IDC_POSY);
-		pWnd->SetWindowText(std::to_wstring(selectedObj->posY).c_str());
+		pWnd->SetWindowText(std::to_wstring(m_selectedObject->posY).c_str());
 
 		pWnd = GetDlgItem(IDC_POSZ);
-		pWnd->SetWindowText(std::to_wstring(selectedObj->posZ).c_str());
+		pWnd->SetWindowText(std::to_wstring(m_selectedObject->posZ).c_str());
 
 		pWnd = GetDlgItem(IDC_ROTX);
-		pWnd->SetWindowText(std::to_wstring(selectedObj->rotX).c_str());
+		pWnd->SetWindowText(std::to_wstring(m_selectedObject->rotX).c_str());
 
 		pWnd = GetDlgItem(IDC_ROTY);
-		pWnd->SetWindowText(std::to_wstring(selectedObj->rotY).c_str());
+		pWnd->SetWindowText(std::to_wstring(m_selectedObject->rotY).c_str());
 
 		pWnd = GetDlgItem(IDC_ROTZ);
-		pWnd->SetWindowText(std::to_wstring(selectedObj->rotZ).c_str());
+		pWnd->SetWindowText(std::to_wstring(m_selectedObject->rotZ).c_str());
 
 		pWnd = GetDlgItem(IDC_SCALEX);
-		pWnd->SetWindowText(std::to_wstring(selectedObj->scaX).c_str());
+		pWnd->SetWindowText(std::to_wstring(m_selectedObject->scaX).c_str());
 
 		pWnd = GetDlgItem(IDC_SCALEY);
-		pWnd->SetWindowText(std::to_wstring(selectedObj->scaY).c_str());
+		pWnd->SetWindowText(std::to_wstring(m_selectedObject->scaY).c_str());
 
 		pWnd = GetDlgItem(IDC_SCALEZ);
-		pWnd->SetWindowText(std::to_wstring(selectedObj->scaZ).c_str());
+		pWnd->SetWindowText(std::to_wstring(m_selectedObject->scaZ).c_str());
+	}
+}
 
+void EditObjectDialogue::ProcessMultipleObjects()
+{
+	for (int i = 0; i < m_sceneGraph->size(); i++)
+	{
+		for (int j = 0; j < m_selectedObjectIDs->size(); j++)
+		{
+			int currentID = (m_sceneGraph->at(i).ID);
+
+			if (currentID == m_selectedObjectIDs->at(i))
+			{
+				std::wstring listBoxEntry = std::to_wstring(currentID);
+				m_selectIDBox.AddString(listBoxEntry.c_str());
+				m_selectedObjects->push_back(m_sceneGraph->at(i));
+			}
+		}
 	}
 }
 
@@ -108,23 +140,153 @@ void EditObjectDialogue::End()
 {
 	modelChoice.clear();
 	texChoice.clear();
-	selectedObj = NULL;
+
+	if (m_selectedObjects != NULL)
+	{
+		m_selectedObjects->clear();
+	}
+
+	if (m_selectedObjectIDs != NULL)
+	{
+		m_selectedObjectIDs->clear();
+	}
+
+	m_selectedObject = NULL;
+	m_selectedObjectID = NULL;
 	DestroyWindow();	//destory the window properly.  INcluding the links and pointers created.  THis is so the dialogue can start again. 
 }
 
 void EditObjectDialogue::EditObject()
 {
-	if (selectedObj)
+	if (m_toolObject->ShouldSelectMultiple()) 
+	{
+		EditMultipleObjects();
+	}
+
+	else {
+		EditSingleObject();
+	}
+
+	End();
+}
+
+void EditObjectDialogue::EditSingleObject()
+{
+	if (modelChoice.size() != 0)
+	{
+		m_selectedObject->model_path = std::string(modelChoice.begin(), modelChoice.end());
+
+	}
+
+	if (texChoice.size() != 0)
+	{
+		m_selectedObject->tex_diffuse_path = std::string(texChoice.begin(), texChoice.end());
+	}
+
+	CString edit_PosX, edit_PosY, edit_PosZ,
+		edit_RotX, edit_RotY, edit_RotZ,
+		edit_ScaleX, edit_ScaleY, edit_ScaleZ;
+
+	//Position changes////////////////////////////////////////
+	pWnd = GetDlgItem(IDC_POSX);
+	pWnd->GetWindowText(edit_PosX);
+	swscanf_s(edit_PosX, L"%f", &positionX);
+
+	if (positionX > -50 && positionX < 50)
+	{
+		m_selectedObject->posX = positionX;
+	}
+
+	pWnd = GetDlgItem(IDC_POSY);
+	pWnd->GetWindowText(edit_PosY);
+	swscanf_s(edit_PosY, L"%f", &positionY);
+
+	if (positionY > -50 && positionY < 50)
+	{
+		m_selectedObject->posY = positionY;
+	}
+
+	pWnd = GetDlgItem(IDC_POSZ);
+	pWnd->GetWindowText(edit_PosZ);
+	swscanf_s(edit_PosZ, L"%f", &positionZ);
+
+	if (positionZ > -50 && positionZ < 50)
+	{
+		m_selectedObject->posZ = positionZ;
+	}
+
+	//Rotation changes//////////////////////////
+	pWnd = GetDlgItem(IDC_ROTX);
+	pWnd->GetWindowText(edit_RotX);
+	swscanf_s(edit_RotX, L"%f", &rotateX);
+
+	if (rotateX >= -360 && rotateX <= 360)
+	{
+		m_selectedObject->rotX = rotateX;
+	}
+
+	pWnd = GetDlgItem(IDC_ROTY);
+	pWnd->GetWindowText(edit_RotY);
+	swscanf_s(edit_RotY, L"%f", &rotateY);
+
+	if (rotateY >= -360 && rotateY <= 360)
+	{
+		m_selectedObject->rotY = rotateY;
+	}
+
+	pWnd = GetDlgItem(IDC_ROTZ);
+	pWnd->GetWindowText(edit_RotZ);
+	swscanf_s(edit_RotZ, L"%f", &rotateZ);
+
+	if (rotateZ >= -360 && rotateZ <= 360)
+	{
+		m_selectedObject->rotZ = rotateZ;
+	}
+
+	//scale changes///////////////////////////
+	pWnd = GetDlgItem(IDC_SCALEX);
+	pWnd->GetWindowText(edit_ScaleX);
+	swscanf_s(edit_ScaleX, L"%f", &scaleX);
+
+	if (scaleX > 0)
+	{
+		m_selectedObject->scaX = scaleX;
+	}
+
+	pWnd = GetDlgItem(IDC_SCALEY);
+	pWnd->GetWindowText(edit_ScaleY);
+	swscanf_s(edit_ScaleY, L"%f", &scaleY);
+
+	if (scaleY > 0)
+	{
+		m_selectedObject->scaY = scaleY;
+	}
+
+	pWnd = GetDlgItem(IDC_SCALEZ);
+	pWnd->GetWindowText(edit_ScaleZ);
+	swscanf_s(edit_ScaleZ, L"%f", &scaleZ);
+
+	if (scaleZ > 0)
+	{
+		m_selectedObject->scaZ = scaleZ;
+	}
+
+	m_toolObject->UpdateDisplayList();
+}
+
+void EditObjectDialogue::EditMultipleObjects()
+{
+	for (int i = 0; i < m_selectedObjects->size(); i++)
 	{
 		if (modelChoice.size() != 0)
 		{
-			selectedObj->model_path = std::string(modelChoice.begin(), modelChoice.end());
+			m_selectedObjects->at(i).model_path = std::string(modelChoice.begin(), modelChoice.end());
 
 		}
 
 		if (texChoice.size() != 0)
 		{
-			selectedObj->tex_diffuse_path = std::string(texChoice.begin(), texChoice.end());
+			m_selectedObjects->at(i).tex_diffuse_path = std::string(texChoice.begin(), texChoice.end());
 		}
 
 		CString edit_PosX, edit_PosY, edit_PosZ,
@@ -138,16 +300,16 @@ void EditObjectDialogue::EditObject()
 
 		if (positionX > -50 && positionX < 50)
 		{
-			selectedObj->posX = positionX;
+			m_selectedObjects->at(i).posX = positionX;
 		}
-		
+
 		pWnd = GetDlgItem(IDC_POSY);
 		pWnd->GetWindowText(edit_PosY);
 		swscanf_s(edit_PosY, L"%f", &positionY);
 
 		if (positionY > -50 && positionY < 50)
 		{
-			selectedObj->posY = positionY;
+			m_selectedObjects->at(i).posY = positionY;
 		}
 
 		pWnd = GetDlgItem(IDC_POSZ);
@@ -156,7 +318,7 @@ void EditObjectDialogue::EditObject()
 
 		if (positionZ > -50 && positionZ < 50)
 		{
-			selectedObj->posZ = positionZ;
+			m_selectedObjects->at(i).posZ = positionZ;
 		}
 
 		//Rotation changes//////////////////////////
@@ -166,7 +328,7 @@ void EditObjectDialogue::EditObject()
 
 		if (rotateX >= -360 && rotateX <= 360)
 		{
-			selectedObj->rotX = rotateX;
+			m_selectedObjects->at(i).rotX = rotateX;
 		}
 
 		pWnd = GetDlgItem(IDC_ROTY);
@@ -175,7 +337,7 @@ void EditObjectDialogue::EditObject()
 
 		if (rotateY >= -360 && rotateY <= 360)
 		{
-			selectedObj->rotY = rotateY;
+			m_selectedObjects->at(i).rotY = rotateY;
 		}
 
 		pWnd = GetDlgItem(IDC_ROTZ);
@@ -184,7 +346,7 @@ void EditObjectDialogue::EditObject()
 
 		if (rotateZ >= -360 && rotateZ <= 360)
 		{
-			selectedObj->rotZ = rotateZ;
+			m_selectedObjects->at(i).rotZ = rotateZ;
 		}
 
 		//scale changes///////////////////////////
@@ -192,9 +354,9 @@ void EditObjectDialogue::EditObject()
 		pWnd->GetWindowText(edit_ScaleX);
 		swscanf_s(edit_ScaleX, L"%f", &scaleX);
 
-		if (scaleX >0)
+		if (scaleX > 0)
 		{
-			selectedObj->scaX = scaleX;
+			m_selectedObjects->at(i).scaX = scaleX;
 		}
 
 		pWnd = GetDlgItem(IDC_SCALEY);
@@ -203,7 +365,7 @@ void EditObjectDialogue::EditObject()
 
 		if (scaleY > 0)
 		{
-			selectedObj->scaY = scaleY;
+			m_selectedObjects->at(i).scaY = scaleY;
 		}
 
 		pWnd = GetDlgItem(IDC_SCALEZ);
@@ -212,13 +374,11 @@ void EditObjectDialogue::EditObject()
 
 		if (scaleZ > 0)
 		{
-			selectedObj->scaZ = scaleZ;
+			m_selectedObjects->at(i).scaZ = scaleZ;
 		}
 
 		m_toolObject->UpdateDisplayList();
 	}
-
-	End();
 }
 
 void EditObjectDialogue::SelectModel()
