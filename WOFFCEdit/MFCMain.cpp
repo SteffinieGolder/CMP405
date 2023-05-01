@@ -72,12 +72,30 @@ int MFCMain::Run()
 		}
 		else
 		{	
-			int ID = m_ToolSystem.getCurrentSelectionID();
-			std::wstring statusString = L"Selected Object: " + std::to_wstring(ID);
-			m_ToolSystem.Tick(&msg);
+			if (!m_ToolSystem.ShouldSelectMultiple())
+			{
+				int ID = m_ToolSystem.getCurrentSelectionID();
+				std::wstring statusString = L"Selected Object: " + std::to_wstring(ID);
+				m_ToolSystem.Tick(&msg);
 
-			//send current object ID to status bar in The main frame
-			m_frame->m_wndStatusBar.SetPaneText(1, statusString.c_str(), 1);	
+				//send current object ID to status bar in The main frame
+				m_frame->m_wndStatusBar.SetPaneText(1, statusString.c_str(), 1);
+			}
+
+			else 
+			{
+				std::wstring statusString = L"Selected Objects: ";
+
+				for (int i = 0; i < m_ToolSystem.m_selectedObjects.size(); i++)
+				{
+					statusString += std::to_wstring(m_ToolSystem.m_selectedObjects.at(i));
+					statusString += L", ";
+				}
+
+				m_ToolSystem.Tick(&msg);
+				//send current object ID to status bar in The main frame
+				m_frame->m_wndStatusBar.SetPaneText(1, statusString.c_str(), 1);
+			}
 		}
 	}
 

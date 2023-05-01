@@ -35,9 +35,8 @@ protected:
 	std::vector<std::wstring> m_availableTextures;
 	std::vector<std::wstring> m_availableModels;
 	std::vector<SceneObject>* m_sceneGraph;
-	std::vector<int>* m_selectedObjectIDs;
-	std::vector<SceneObject>* m_selectedObjects;
 	int* m_selectedObjectID;
+	std::vector<int>* m_selectedObjectIDs;
 	SceneObject* m_selectedObject;
 	std::wstring texChoice;
 	std::wstring modelChoice;

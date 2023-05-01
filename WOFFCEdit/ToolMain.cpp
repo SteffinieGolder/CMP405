@@ -459,11 +459,32 @@ void ToolMain::Tick(MSG *msg)
 	{
 		if (m_toolInputCommands.selectMultiple)
 		{
-			m_selectedObjects.push_back(m_d3dRenderer.MousePicking());
+			int currentID = m_d3dRenderer.MousePicking();
+
+			for (int i = 0; i < m_sceneGraph.size(); i++)
+			{
+				if (currentID == m_sceneGraph.at(i).ID)
+				{
+					if (m_selectedObjects.size() != 0 && m_selectedObjects.cend() != std::find(m_selectedObjects.cbegin(), m_selectedObjects.cend(), currentID))
+					{
+						break;
+					}
+
+					else {
+						m_selectedObjects.push_back(m_sceneGraph.at(i).ID);
+						break;
+					}
+				}
+			}
 		}
 
 		else {
 			m_selectedObject = m_d3dRenderer.MousePicking();
+
+			if (m_selectedObject != -1)
+			{
+				m_selectedObjects.clear();
+			}
 		}
 
 		m_toolInputCommands.mouse_LB_Down = false;
@@ -542,6 +563,12 @@ void ToolMain::UpdateInput(MSG * msg)
 	}
 	else m_toolInputCommands.focusOnSelected = false;
 
+	if (m_keyArray['Z'])
+	{
+		m_toolInputCommands.selectMultiple = true;
+	}
+	else m_toolInputCommands.selectMultiple = false;
+
 	/*
 	* //rotation
 	if (m_keyArray['E'])
@@ -561,5 +588,10 @@ void ToolMain::UpdateInput(MSG * msg)
 
 bool ToolMain::ShouldSelectMultiple()
 {
-	return m_toolInputCommands.selectMultiple;
+	if (m_selectedObjects.empty())
+	{
+		return false;
+	}
+
+	else return true;
 }
