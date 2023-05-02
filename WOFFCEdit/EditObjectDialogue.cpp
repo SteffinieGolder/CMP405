@@ -174,11 +174,18 @@ void EditObjectDialogue::EditObject()
 {
 	if (m_toolObject->ShouldSelectMultiple()) 
 	{
-		EditMultipleObjects();
+		if (m_selectedObjectIDs->size() != 0)
+		{
+			EditMultipleObjects();
+		}
 	}
 
 	else {
-		EditSingleObject();
+
+		if (m_selectedObject)
+		{
+			EditSingleObject();
+		}
 	}
 
 	End();

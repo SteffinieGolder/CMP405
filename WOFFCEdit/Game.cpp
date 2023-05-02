@@ -177,13 +177,13 @@ void Game::Render()
 	//CAMERA POSITION ON HUD
 	m_sprites->Begin();
 	WCHAR   Buffer[256];
-	std::wstring var = L"Cam X: " + std::to_wstring(m_camera->GetCameraPosition().x) + L"Cam Y: " + std::to_wstring(m_camera->GetCameraPosition().y) + L"Cam Z: " + std::to_wstring(m_camera->GetCameraPosition().z);
-    std::wstring var2 = L"Mouse X: " + std::to_wstring(m_InputCommands.mousePosX) + L"Mouse Y: " + std::to_wstring(m_InputCommands.mousePosY);
+	//std::wstring var = L"Cam X: " + std::to_wstring(m_camera->GetCameraPosition().x) + L"Cam Y: " + std::to_wstring(m_camera->GetCameraPosition().y) + L"Cam Z: " + std::to_wstring(m_camera->GetCameraPosition().z);
+    //std::wstring var2 = L"Mouse X: " + std::to_wstring(m_InputCommands.mousePosX) + L"Mouse Y: " + std::to_wstring(m_InputCommands.mousePosY);
     //std::wstring var3 = L"Pos X: " + std::to_wstring(m_camera->GetPos2().x) + L"Pos y: " + std::to_wstring(m_camera->GetPos2().y) + L"Pos Z: " + std::to_wstring(m_camera->GetPos2().z);
    // std::wstring var4 = L"isFocus: " + std::to_wstring(m_InputCommands.focusOnSelected);
 
-    m_font->DrawString(m_sprites.get(), var.c_str() , XMFLOAT2(100, 10), Colors::Yellow);
-    m_font->DrawString(m_sprites.get(), var2.c_str(), XMFLOAT2(100, 30), Colors::Yellow);
+    //m_font->DrawString(m_sprites.get(), var.c_str() , XMFLOAT2(100, 10), Colors::Yellow);
+    //m_font->DrawString(m_sprites.get(), var2.c_str(), XMFLOAT2(100, 30), Colors::Yellow);
    // m_font->DrawString(m_sprites.get(), var3.c_str(), XMFLOAT2(100, 50), Colors::Yellow);
    // m_font->DrawString(m_sprites.get(), var4.c_str(), XMFLOAT2(100, 70), Colors::Yellow);
 	m_sprites->End();
