@@ -283,7 +283,7 @@ void ToolMain::onActionCreateObject(std::string* modelPath, std::string* textPat
 	char* ErrMSG = 0;
 	sqlite3_stmt* pResults;								//results of the query
 
-	int numObjects = m_sceneGraph.size() + 1;				//Loop thru the scene graph.
+	int numObjects = m_sceneGraph.size() + 1;			
 
 	std::stringstream command3;
 	command3 << "INSERT INTO Objects "
@@ -510,8 +510,11 @@ void ToolMain::UpdateInput(MSG * msg)
 		break;
 
 	case WM_MOUSEMOVE:
-		m_toolInputCommands.prevMouseX = m_toolInputCommands.mousePosX;
-		m_toolInputCommands.prevMouseY = m_toolInputCommands.mousePosY;
+		if (m_toolInputCommands.rotate)
+		{
+			m_toolInputCommands.prevMouseX = m_toolInputCommands.mousePosX;
+			m_toolInputCommands.prevMouseY = m_toolInputCommands.mousePosY;
+		}
 
 		m_toolInputCommands.mousePosX = GET_X_LPARAM(msg->lParam);
 		m_toolInputCommands.mousePosY = GET_Y_LPARAM(msg->lParam);

@@ -43,7 +43,7 @@ Camera::~Camera()
 
 void Camera::Update(DX::StepTimer const& timer)
 {
-	if (m_inputCommands->rotate)
+	if (m_inputCommands->rotate && m_inputCommands->prevMouseX !=0 && m_inputCommands->prevMouseY !=0)
 	{
 		float xChange = m_inputCommands->mousePosX - m_inputCommands->prevMouseX;
 		float yChange = m_inputCommands->mousePosY - m_inputCommands->prevMouseY;
@@ -65,6 +65,21 @@ void Camera::Update(DX::StepTimer const& timer)
 		}
 	}
 
+	if (m_inputCommands->focusOnSelected && m_selectedObj)
+	{
+		float xChange = m_camPosition.x - m_selectedObj->m_position.x;
+		float yChange = m_camPosition.y - m_selectedObj->m_position.y;
+		float zChange = m_camPosition.z - m_selectedObj->m_position.z;
+
+		xChange *= m_camSensitivity;
+		yChange *= m_camSensitivity;
+		zChange *= m_camSensitivity;
+
+		float dist = sqrt(xChange * xChange + zChange * zChange);
+		m_camOrientation.x = atan(yChange / dist);
+		m_camOrientation.y = atan(xChange / zChange);
+	}
+
 	//create look direction from Euler angles in m_camOrientation
 	m_camLookDirection.x = cos((m_camOrientation.y) * 3.1415 / 180) * cos((m_camOrientation.x) * 3.1415 / 180);
 	m_camLookDirection.y = sin((m_camOrientation.x) * 3.1415 / 180);
@@ -75,8 +90,8 @@ void Camera::Update(DX::StepTimer const& timer)
 	m_camLookDirection.Cross(Vector3::UnitY, m_camRight);
 
 	//camera motion is on a plane, so kill the 7 component of the look direction
-	//Vector3 planarMotionVector = m_camLookDirection;
-	//planarMotionVector.y = 0.0;
+	Vector3 planarMotionVector = m_camLookDirection;
+	planarMotionVector.y = 0.0;
 
 	//process input and update stuff
 	if (m_inputCommands->forward)
@@ -96,6 +111,10 @@ void Camera::Update(DX::StepTimer const& timer)
 		m_camPosition -= m_camRight * m_moveSpeed;
 	}
 
+	//update lookat point
+	m_camLookAt = m_camPosition + m_camLookDirection;
+	//apply camera vectors
+	m_viewMatrix = Matrix::CreateLookAt(m_camPosition, m_camLookAt, Vector3::UnitY);
 
 	if (m_inputCommands->focusOnSelected)
 	{
@@ -116,11 +135,6 @@ void Camera::Update(DX::StepTimer const& timer)
 	{
 		m_camPosition.y = 1.0f;
 	}
-
-	//update lookat point
-	m_camLookAt = m_camPosition + m_camLookDirection;
-	//apply camera vectors
-	m_viewMatrix = Matrix::CreateLookAt(m_camPosition, m_camLookAt, Vector3::UnitY);
 }
 
 void Camera::SetInputCommand(InputCommands* input)
