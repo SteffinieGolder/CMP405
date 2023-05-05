@@ -78,25 +78,6 @@ void Camera::Update(DX::StepTimer const& timer)
 		}
 	}
 
-	//If the camera should focus on an object and an object has been selected.
-	if (m_inputCommands->focusOnSelected && m_selectedObj)
-	{
-		//Get the difference between the camera's position and the focus object position.
-		float xChange = m_camPosition.x - m_selectedObj->m_position.x;
-		float yChange = m_camPosition.y - m_selectedObj->m_position.y;
-		float zChange = m_camPosition.z - m_selectedObj->m_position.z;
-
-		//Multiply by cam sensitivity value.
-		xChange *= m_camSensitivity;
-		yChange *= m_camSensitivity;
-		zChange *= m_camSensitivity;
-
-		//Calculate angle to rotate camera by to make it look at the focus object.
-		float dist = sqrt(xChange * xChange + zChange * zChange);
-		m_camOrientation.x = atan(yChange / dist);
-		m_camOrientation.y = atan(xChange / zChange);
-	}
-
 	//create look direction from Euler angles in m_camOrientation
 	m_camLookDirection.x = cos((m_camOrientation.y) * 3.1415 / 180) * cos((m_camOrientation.x) * 3.1415 / 180);
 	m_camLookDirection.y = sin((m_camOrientation.x) * 3.1415 / 180);
@@ -139,15 +120,36 @@ void Camera::Update(DX::StepTimer const& timer)
 		{
 			DirectX::SimpleMath::Vector3 initialPos = m_camPosition;
 			DirectX::SimpleMath::Vector3 focusPos;
-			float distance = 1.5f;
+			//Scale distance factor with scale of object.
+			Vector3 distance = Vector3(m_selectedObj->m_scale.x, m_selectedObj->m_scale.y, m_selectedObj->m_scale.z);
 
-			//Position the camera at the focus object's position.
+			//Position the camera at the focus object's position depending on where camera is looking.
 			focusPos = initialPos + (m_selectedObj->m_position - m_camLookAt);
 			//Move the camera back by a certain distance so the object is in view of the camera.
 			focusPos += (focusPos - m_selectedObj->m_position) * distance;
 
 			//Interpolate between the camera's initial position and the new position with the selected object in view. 
 			m_camPosition = DirectX::XMVectorLerp(initialPos, focusPos, 0.2f);
+
+			//Resets the camera x orientation so object is in view if x orientation is above a certain amount. 
+			if (m_camOrientation.x >= (distance.x*4))
+			{
+				//Get the difference between the camera's position and the focus object position.
+				float xChange = m_camPosition.x - m_selectedObj->m_position.x;
+				float yChange = m_camPosition.y - m_selectedObj->m_position.y;
+				float zChange = m_camPosition.z - m_selectedObj->m_position.z;
+
+				//Multiply by cam sensitivity value.
+				xChange *= m_camSensitivity;
+				yChange *= m_camSensitivity;
+				zChange *= m_camSensitivity;
+
+				//Calculate angle to rotate camera by to make it look at the focus object.
+				float dist = sqrt(xChange * xChange + zChange * zChange);
+
+				m_camOrientation.x = atan(yChange / dist);
+				//m_camOrientation.y = atan(xChange / zChange);
+			}
 
 			//Stop the camera from going underneath the plane when focussing.
 			if (m_camPosition.y < 1.0f)
