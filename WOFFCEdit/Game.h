@@ -116,7 +116,6 @@ private:
 #endif
 
     DirectX::SimpleMath::Matrix                                             m_world;
-    //DirectX::SimpleMath::Matrix                                             m_view;
     DirectX::SimpleMath::Matrix                                             m_projection;
 
 

@@ -6,9 +6,9 @@ BEGIN_MESSAGE_MAP(MFCMain, CWinApp)
 	ON_COMMAND(ID_FILE_QUIT,	&MFCMain::MenuFileQuit)
 	ON_COMMAND(ID_FILE_SAVETERRAIN, &MFCMain::MenuFileSaveTerrain)
 	ON_COMMAND(ID_EDIT_SELECT, &MFCMain::MenuEditSelect)
-	ON_COMMAND(ID_CREATEOBJECT_BOX, &MFCMain::MenuObjectCreateBox)
-	ON_COMMAND(ID_CREATEOBJECT_CUP, &MFCMain::MenuObjectCreateCup)
-	ON_COMMAND(ID_OBJECT_EDITOBJECTPROPERTIES, &MFCMain::MenuObjectEditObject)
+	ON_COMMAND(ID_CREATEOBJECT_BOX, &MFCMain::MenuObjectCreateBox)				//Function to run when user wants to create a default box.
+	ON_COMMAND(ID_CREATEOBJECT_CUP, &MFCMain::MenuObjectCreateCup)				//Function to run when user wants to create a default cup.
+	ON_COMMAND(ID_OBJECT_EDITOBJECTPROPERTIES, &MFCMain::MenuObjectEditObject)	//Function which runs the Edit object dialogue window. 
 	ON_COMMAND(ID_BUTTON40001,	&MFCMain::ToolBarButton1)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_TOOL, &CMyFrame::OnUpdatePage)
 END_MESSAGE_MAP()
@@ -72,8 +72,10 @@ int MFCMain::Run()
 		}
 		else
 		{	
+			//Checks if a single object has been selected.
 			if (!m_ToolSystem.ShouldSelectMultiple())
 			{
+				//Display the ID of the selected object to the user. 
 				int ID = m_ToolSystem.getCurrentSelectionID();
 				std::wstring statusString = L"Selected Object: " + std::to_wstring(ID);
 				m_ToolSystem.Tick(&msg);
@@ -84,6 +86,7 @@ int MFCMain::Run()
 
 			else 
 			{
+				//Compile a string consisting of object IDs in the vector. 
 				std::wstring statusString = L"Selected Objects: ";
 
 				for (int i = 0; i < m_ToolSystem.m_selectedObjects.size(); i++)
@@ -93,7 +96,7 @@ int MFCMain::Run()
 				}
 
 				m_ToolSystem.Tick(&msg);
-				//send current object ID to status bar in The main frame
+				//Send object ID string to the status bar for display. 
 				m_frame->m_wndStatusBar.SetPaneText(1, statusString.c_str(), 1);
 			}
 		}
@@ -130,6 +133,7 @@ void MFCMain::ToolBarButton1()
 	m_ToolSystem.onActionSave();
 }
 
+//Pass appropriate model and texture to the create object function for a box. 
 void MFCMain::MenuObjectCreateBox()
 {
 	std::string objStr = "'database/data/placeholder.cmo'";
@@ -139,6 +143,7 @@ void MFCMain::MenuObjectCreateBox()
 
 }
 
+//Pass appropriate model and texture to the create object function for a cup. 
 void MFCMain::MenuObjectCreateCup()
 {
 	std::string objStr2 = "'database/data/cup._obj.cmo'";
@@ -150,11 +155,12 @@ void MFCMain::MenuObjectCreateCup()
 
 void MFCMain::MenuObjectCreateObject(std::string* modelPath, std::string* texPath)
 {
-	//Add object 
+	//Add object to the scene and database. 
 	m_ToolSystem.onActionCreateObject(modelPath, texPath);
 
 }
 
+//Prepare and create edit object window.
 void MFCMain::MenuObjectEditObject()
 {
 	m_editObjectDialogue.Create(IDD_DIALOG3);	//Start up modeless

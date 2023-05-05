@@ -277,15 +277,21 @@ void ToolMain::onActionSave()
 	MessageBox(NULL, L"Objects Saved", L"Notification", MB_OK);
 }
 
+//Function run when user selects to create a new default object. 
 void ToolMain::onActionCreateObject(std::string* modelPath, std::string* textPath)
 {
 	int rc;
 	char* ErrMSG = 0;
 	sqlite3_stmt* pResults;								//results of the query
 
+	//Value used for new object ID based on current amount of existing objects +1.
 	int numObjects = m_sceneGraph.size() + 1;			
 
 	std::stringstream command3;
+	//INSERT INTO command adds this entry to the database. 
+	//numObjects used as ID and X and Z positions so objects don't spawn on top of eachother.
+	//model and texture paths are passed in based on which type of object has been selected to create.
+	//Otherwise database entry is filled with default values.
 	command3 << "INSERT INTO Objects "
 		<< "VALUES(" << numObjects << ","
 		<< 0						 << ","
@@ -351,6 +357,7 @@ void ToolMain::onActionCreateObject(std::string* modelPath, std::string* textPat
 	rc = sqlite3_prepare_v2(m_databaseConnection, sqlCommand3.c_str(), -1, &pResults, 0);		//Prepare database with new data
 	sqlite3_step(pResults);
 
+	//Update scene graph to add new object to the scene.
 	UpdateSceneGraph();
 }
 
@@ -359,11 +366,13 @@ void ToolMain::onActionSaveTerrain()
 	m_d3dRenderer.SaveDisplayChunk(&m_chunk);
 }
 
+//Rebuild the display list in Game.cpp when the scene graph has been changed. 
 void ToolMain::UpdateDisplayList()
 {
 	m_d3dRenderer.BuildDisplayList(&m_sceneGraph);
 }
 
+//Updates the scene graph.
 void ToolMain::UpdateSceneGraph()
 {
 	//SQL
@@ -447,29 +456,27 @@ void ToolMain::UpdateSceneGraph()
 
 void ToolMain::Tick(MSG *msg)
 {
-	//do we have a selection
-	//do we have a mode
-	//are we clicking / dragging /releasing
-	//has something changed
-		//update Scenegraph
-		//add to scenegraph
-		//resend scenegraph to Direct X renderer
-
+	//Check if left mouse button is clicked.
 	if (m_toolInputCommands.mouse_LB_Down)
 	{
+		//Check if user is holding Z key to select multiple objects. 
 		if (m_toolInputCommands.selectMultiple)
 		{
+			//Run mouse picking function which returns the ID of the selected object. 
 			int currentID = m_d3dRenderer.MousePicking();
 
 			for (int i = 0; i < m_sceneGraph.size(); i++)
 			{
+				//Locate the object in the scene graph.
 				if (currentID == m_sceneGraph.at(i).ID)
 				{
+					//Check if that ID already exists in the ID vector. Ignore if so.
 					if (m_selectedObjects.size() != 0 && m_selectedObjects.cend() != std::find(m_selectedObjects.cbegin(), m_selectedObjects.cend(), currentID))
 					{
 						break;
 					}
 
+					//Otherwise add this ID to the vector. 
 					else {
 						m_selectedObjects.push_back(m_sceneGraph.at(i).ID);
 						break;
@@ -478,6 +485,7 @@ void ToolMain::Tick(MSG *msg)
 			}
 		}
 
+		//If user is selecting a single object then store the ID. 
 		else {
 			m_selectedObject = m_d3dRenderer.MousePicking();
 
@@ -487,6 +495,7 @@ void ToolMain::Tick(MSG *msg)
 			}
 		}
 
+		//Reset the mouse click bool.
 		m_toolInputCommands.mouse_LB_Down = false;
 	}
 
@@ -509,25 +518,31 @@ void ToolMain::UpdateInput(MSG * msg)
 		m_keyArray[msg->wParam] = false;
 		break;
 
+		//Mouse has moved.
 	case WM_MOUSEMOVE:
+		//If user wants to rotate camera, update the previous mouse positions. 
 		if (m_toolInputCommands.rotate)
 		{
 			m_toolInputCommands.prevMouseX = m_toolInputCommands.mousePosX;
 			m_toolInputCommands.prevMouseY = m_toolInputCommands.mousePosY;
 		}
 
+		//Get the current mouse positions.
 		m_toolInputCommands.mousePosX = GET_X_LPARAM(msg->lParam);
 		m_toolInputCommands.mousePosY = GET_Y_LPARAM(msg->lParam);
 		break;
 
+		//Left mouse button is down (selection).
 	case WM_LBUTTONDOWN:
 		m_toolInputCommands.mouse_LB_Down = true;
 		break;
 
+		//Right mouse button is down (camera rotation).
 	case WM_RBUTTONDOWN:
 		m_toolInputCommands.rotate = true;
 		break;
 
+		//Reset values when not rotating the camera. 
 	case WM_RBUTTONUP:
 		m_toolInputCommands.rotate = false;
 		m_toolInputCommands.prevMouseX = 0.0f;
@@ -560,12 +575,14 @@ void ToolMain::UpdateInput(MSG * msg)
 	}
 	else m_toolInputCommands.right = false;
 
+	//F is pressed to focus the camera on a selected object.
 	if (m_keyArray['F'])
 	{
 		m_toolInputCommands.focusOnSelected = true;
 	}
 	else m_toolInputCommands.focusOnSelected = false;
 
+	//Z is held when making multiple object selections.
 	if (m_keyArray['Z'])
 	{
 		m_toolInputCommands.selectMultiple = true;
@@ -589,6 +606,7 @@ void ToolMain::UpdateInput(MSG * msg)
 	//WASD
 }
 
+//Returns if the user has selected multiple objects or a single object (used in edit object window).
 bool ToolMain::ShouldSelectMultiple()
 {
 	if (m_selectedObjects.empty())

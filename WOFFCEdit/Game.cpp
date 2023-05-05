@@ -43,6 +43,7 @@ void Game::Initialize(HWND window, int width, int height)
 
     m_keyboard = std::make_unique<Keyboard>();
 
+    //Camera class.
 	m_camera = std::make_unique<Camera>();
 
     m_mouse = std::make_unique<Mouse>();
@@ -117,6 +118,7 @@ void Game::Tick(InputCommands *Input)
 // Updates the world.
 void Game::Update(DX::StepTimer const& timer)
 {
+    //Update the camera.
 	m_camera->Update(timer);
 	m_batchEffect->SetView(m_camera->GetCameraViewMatrix());
     m_batchEffect->SetWorld(Matrix::Identity);
@@ -429,6 +431,7 @@ int Game::MousePicking()
 {
     int selectedID = -1;
     float pickedDistance = 0;
+    //Set closest distance to very far.
     float closestDistance = 100000;
 
     //setup near and far planes of frustum with mouse X and mouse y passed down from Toolmain. 
@@ -466,15 +469,20 @@ int Game::MousePicking()
             //checking for ray intersection
             if (m_displayList[i].m_model.get()->meshes[y]->boundingBox.Intersects(nearPoint, pickingVector, pickedDistance))
             {
+                //Check the closest distance against the current object's distance. Update if picked distance is closer.
                 if (closestDistance > pickedDistance)
                 {
+                    //update the new closest distance to the picked distance. 
                     closestDistance = pickedDistance;
+                    //Get the selected ID for the current object from the display list.
                     selectedID = m_displayList[i].m_ID;
                 }
             }
         }
     }
 
+    //Send object to the camera class if an ID was found.
+    //Allows camera to focus on the selected object.
     if (selectedID != -1)
     {
         for (int j = 0; j < m_displayList.size(); j++)

@@ -9,7 +9,6 @@
 #include "resource.h"
 #include "MFCFrame.h"
 #include "SelectDialogue.h"
-#include "CreateObjectDialogue.h"
 #include "EditObjectDialogue.h"
 
 
@@ -23,18 +22,17 @@ public:
 
 private:
 
-	CMyFrame * m_frame;	//handle to the frame where all our UI is
-	HWND m_toolHandle;	//Handle to the MFC window
-	ToolMain m_ToolSystem;	//Instance of Tool System that we interface to. 
-	CRect WindowRECT;	//Window area rectangle. 
-	SelectDialogue m_ToolSelectDialogue;			//for modeless dialogue, declare it here
-	CreateObjectDialogue m_createObjectDialogue;
-	EditObjectDialogue m_editObjectDialogue;
+	CMyFrame * m_frame;							//Handle to the frame where all our UI is
+	HWND m_toolHandle;							//Handle to the MFC window
+	ToolMain m_ToolSystem;						//Instance of Tool System that we interface to. 
+	CRect WindowRECT;							//Window area rectangle. 
+	SelectDialogue m_ToolSelectDialogue;		//For modeless dialogue, declare it here
+	EditObjectDialogue m_editObjectDialogue;	//Edit object dialogue instance. 
 
 	int m_width;		
 	int m_height;
 	
-	//Interface funtions for menu and toolbar etc requires
+	//Interface funtions for menu and toolbar etc
 	afx_msg void MenuFileQuit();
 	afx_msg void MenuFileSaveTerrain();
 	afx_msg void MenuEditSelect();
