@@ -277,6 +277,32 @@ void ToolMain::onActionSave()
 	MessageBox(NULL, L"Objects Saved", L"Notification", MB_OK);
 }
 
+void ToolMain::DeleteObject()
+{
+	if (m_selectedObject)
+	{
+		for (int i = 0; i < m_sceneGraph.size(); i++)
+		{
+			if (m_sceneGraph.at(i).ID == m_selectedObject)
+			{
+				m_sceneGraph.erase(m_sceneGraph.begin() + i);
+				m_selectedObject = NULL;
+				break;
+			}
+		}
+
+		int newID = 0;
+
+		for (int i = 0; i < m_sceneGraph.size(); i++)
+		{ 
+			newID++;
+			m_sceneGraph.at(i).ID = newID;
+		}
+	}
+
+	m_d3dRenderer.BuildDisplayList(&m_sceneGraph);
+}
+
 //Function run when user selects to create a new default object. 
 void ToolMain::onActionCreateObject(std::string* modelPath, std::string* textPath)
 {
@@ -454,7 +480,7 @@ void ToolMain::UpdateSceneGraph()
 
 }
 
-void ToolMain::Tick(MSG *msg)
+void ToolMain::Tick(MSG* msg)
 {
 	//Check if left mouse button is clicked.
 	if (m_toolInputCommands.mouse_LB_Down)
@@ -465,48 +491,54 @@ void ToolMain::Tick(MSG *msg)
 			//Run mouse picking function which returns the ID of the selected object. 
 			int currentID = m_d3dRenderer.MousePicking();
 
-			for (int i = 0; i < m_sceneGraph.size(); i++)
+			if (currentID != -1)
 			{
-				//Locate the object in the scene graph.
-				if (currentID == m_sceneGraph.at(i).ID)
+				for (int i = 0; i < m_sceneGraph.size(); i++)
 				{
-					//Check if that ID already exists in the ID vector. Ignore if so.
-					if (m_selectedObjects.size() != 0 && m_selectedObjects.cend() != std::find(m_selectedObjects.cbegin(), m_selectedObjects.cend(), currentID))
+					//Locate the object in the scene graph.
+					if (currentID == m_sceneGraph.at(i).ID)
 					{
-						break;
-					}
+						//Check if that ID already exists in the ID vector. Ignore if so.
+						if (m_selectedObjects.size() != 0 && m_selectedObjects.cend() != std::find(m_selectedObjects.cbegin(), m_selectedObjects.cend(), currentID))
+						{
+							break;
+						}
 
-					//Otherwise add this ID to the vector. 
-					else {
-						m_selectedObjects.push_back(m_sceneGraph.at(i).ID);
-						break;
+						//Otherwise add this ID to the vector. 
+						else {
+							m_selectedObjects.push_back(m_sceneGraph.at(i).ID);
+							break;
+						}
 					}
 				}
 			}
 		}
 
 		//If user is selecting a single object then store the ID. 
-		else {
-			m_selectedObject = m_d3dRenderer.MousePicking();
+		else
+		{
+			int currentID = m_d3dRenderer.MousePicking();
 
-			if (m_selectedObject != -1)
+			if (currentID != -1)
 			{
-				m_selectedObjects.clear();
+				m_selectedObject = currentID;
+
+				if (m_selectedObject)
+				{
+					m_selectedObjects.clear();
+				}
 			}
 		}
 
 		//Reset the mouse click bool.
 		m_toolInputCommands.mouse_LB_Down = false;
 	}
-
-
 	//Renderer Update Call
 	m_d3dRenderer.Tick(&m_toolInputCommands);
 }
 
 void ToolMain::UpdateInput(MSG * msg)
 {
-
 	switch (msg->message)
 	{
 		//Global inputs,  mouse position and keys etc

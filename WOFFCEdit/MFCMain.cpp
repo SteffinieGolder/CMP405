@@ -10,6 +10,7 @@ BEGIN_MESSAGE_MAP(MFCMain, CWinApp)
 	ON_COMMAND(ID_CREATEOBJECT_CUP, &MFCMain::MenuObjectCreateCup)				//Function to run when user wants to create a default cup.
 	ON_COMMAND(ID_OBJECT_EDITOBJECTPROPERTIES, &MFCMain::MenuObjectEditObject)	//Function which runs the Edit object dialogue window. 
 	ON_COMMAND(ID_BUTTON40001,	&MFCMain::ToolBarButton1)
+	ON_COMMAND(ID_BUTTON40012, &MFCMain::ToolbarDeleteObject)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_TOOL, &CMyFrame::OnUpdatePage)
 END_MESSAGE_MAP()
 
@@ -166,6 +167,11 @@ void MFCMain::MenuObjectEditObject()
 	m_editObjectDialogue.Create(IDD_DIALOG3);	//Start up modeless
 	m_editObjectDialogue.ShowWindow(SW_SHOW);	//show modeless
 	m_editObjectDialogue.SetObjectData(&m_ToolSystem);
+}
+
+void MFCMain::ToolbarDeleteObject()
+{
+	m_ToolSystem.DeleteObject();
 }
 
 MFCMain::MFCMain()

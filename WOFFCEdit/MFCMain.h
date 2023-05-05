@@ -40,6 +40,7 @@ private:
 	afx_msg	void MenuObjectEditObject();
 	afx_msg	void MenuObjectCreateBox();
 	afx_msg	void MenuObjectCreateCup();
+	afx_msg void ToolbarDeleteObject();
 
 	void MenuObjectCreateObject(std::string* modelPath, std::string* texPath);
 

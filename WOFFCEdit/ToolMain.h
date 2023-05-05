@@ -24,6 +24,7 @@ public: //methods
 	void	UpdateSceneGraph();
 	void    UpdateDisplayList();
 	bool	ShouldSelectMultiple();
+	void    DeleteObject();
 	afx_msg	void	onActionSave();											//save the current chunk
 	afx_msg void	onActionSaveTerrain();									//save chunk geometry
 
