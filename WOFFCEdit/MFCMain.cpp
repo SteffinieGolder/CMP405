@@ -9,8 +9,8 @@ BEGIN_MESSAGE_MAP(MFCMain, CWinApp)
 	ON_COMMAND(ID_CREATEOBJECT_BOX, &MFCMain::MenuObjectCreateBox)				//Function to run when user wants to create a default box.
 	ON_COMMAND(ID_CREATEOBJECT_CUP, &MFCMain::MenuObjectCreateCup)				//Function to run when user wants to create a default cup.
 	ON_COMMAND(ID_OBJECT_EDITOBJECTPROPERTIES, &MFCMain::MenuObjectEditObject)	//Function which runs the Edit object dialogue window. 
-	ON_COMMAND(ID_BUTTON40001,	&MFCMain::ToolBarButton1)
-	ON_COMMAND(ID_BUTTON40012, &MFCMain::ToolbarDeleteObject)
+	ON_COMMAND(ID_BUTTON40001,	&MFCMain::ToolBarButton1)						//Call function to save scene objects.
+	ON_COMMAND(ID_BUTTON40012, &MFCMain::ToolbarDeleteObject)					//Call function to delete selected object.
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_TOOL, &CMyFrame::OnUpdatePage)
 END_MESSAGE_MAP()
 
@@ -169,6 +169,7 @@ void MFCMain::MenuObjectEditObject()
 	m_editObjectDialogue.SetObjectData(&m_ToolSystem);
 }
 
+//Function to delete object once toolbar delete button is pressed.
 void MFCMain::ToolbarDeleteObject()
 {
 	m_ToolSystem.DeleteObject();

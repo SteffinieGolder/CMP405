@@ -21,10 +21,10 @@ public: //methods
 	void	onActionFocusCamera();
 	void	onActionLoad();													//load the current chunk
 	void	onActionCreateObject(std::string* modelPath, std::string* textPath);
-	void	UpdateSceneGraph();
-	void    UpdateDisplayList();
-	bool	ShouldSelectMultiple();
-	void    DeleteObject();
+	void	UpdateSceneGraph();												//Updates the scene graph
+	void    UpdateDisplayList();											//Updates display list in Game.cpp based om scene graph
+	bool	ShouldSelectMultiple();											//Returns if user has selected multiple objects or not.
+	void    DeleteObject();													//Delete selected object from scene. 
 	afx_msg	void	onActionSave();											//save the current chunk
 	afx_msg void	onActionSaveTerrain();									//save chunk geometry
 

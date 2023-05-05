@@ -277,20 +277,26 @@ void ToolMain::onActionSave()
 	MessageBox(NULL, L"Objects Saved", L"Notification", MB_OK);
 }
 
+//Function which deletes the selected object from the scene. 
 void ToolMain::DeleteObject()
 {
+	//Checks if an object has been selected.
 	if (m_selectedObject)
 	{
+		//Find the object in the scene graph based on its ID.
 		for (int i = 0; i < m_sceneGraph.size(); i++)
 		{
 			if (m_sceneGraph.at(i).ID == m_selectedObject)
 			{
+				//Erase the object from the scene graph.
 				m_sceneGraph.erase(m_sceneGraph.begin() + i);
+				//Reset the selected object.
 				m_selectedObject = NULL;
 				break;
 			}
 		}
 
+		//Go through the remaining objects in the scene and give them new IDs.
 		int newID = 0;
 
 		for (int i = 0; i < m_sceneGraph.size(); i++)
@@ -299,7 +305,8 @@ void ToolMain::DeleteObject()
 			m_sceneGraph.at(i).ID = newID;
 		}
 	}
-
+	
+	//Rebuild the display list to reflect the changes. 
 	m_d3dRenderer.BuildDisplayList(&m_sceneGraph);
 }
 
