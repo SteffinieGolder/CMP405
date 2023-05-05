@@ -308,6 +308,8 @@ void ToolMain::DeleteObject()
 	
 	//Rebuild the display list to reflect the changes. 
 	m_d3dRenderer.BuildDisplayList(&m_sceneGraph);
+	//Save changes.
+	onActionSave();
 }
 
 //Function run when user selects to create a new default object. 
@@ -318,11 +320,16 @@ void ToolMain::onActionCreateObject(std::string* modelPath, std::string* textPat
 	sqlite3_stmt* pResults;								//results of the query
 
 	//Value used for new object ID based on current amount of existing objects +1.
-	int numObjects = m_sceneGraph.size() + 1;			
+	int numObjects = m_sceneGraph.size() + 1;
+	int prevIndex = m_sceneGraph.size() - 1;
+
+	//Store object before this one in the scene graph.
+	SceneObject prevObj = m_sceneGraph.at(prevIndex);
 
 	std::stringstream command3;
 	//INSERT INTO command adds this entry to the database. 
-	//numObjects used as ID and X and Z positions so objects don't spawn on top of eachother.
+	//numObjects used as ID.
+	//X and Z positions based on previous object position so objects don't spawn on top of eachother
 	//model and texture paths are passed in based on which type of object has been selected to create.
 	//Otherwise database entry is filled with default values.
 	command3 << "INSERT INTO Objects "
@@ -330,9 +337,9 @@ void ToolMain::onActionCreateObject(std::string* modelPath, std::string* textPat
 		<< 0						 << ","
 		<< *modelPath << ","
 		<< *textPath << ","
-		<< numObjects << ","
+		<< (prevObj.posX + 1) << ","
 		<< 1 << ","
-		<< numObjects << ","
+		<< (prevObj.posZ + 1) << ","
 		<< 0 << ","
 		<< 0 << ","
 		<< 0 << ","
