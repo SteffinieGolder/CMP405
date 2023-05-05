@@ -148,13 +148,13 @@ void Camera::Update(DX::StepTimer const& timer)
 
 			//Interpolate between the camera's initial position and the new position with the selected object in view. 
 			m_camPosition = DirectX::XMVectorLerp(initialPos, focusPos, 0.2f);
-		}
-	}
 
-	//Stop the camera from going underneath the plane. 
-	if (m_camPosition.y < 1.0f)
-	{
-		m_camPosition.y = 1.0f;
+			//Stop the camera from going underneath the plane when focussing.
+			if (m_camPosition.y < 1.0f)
+			{
+				m_camPosition.y = 1.0f;
+			}
+		}
 	}
 }
 
