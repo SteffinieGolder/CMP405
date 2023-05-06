@@ -16,7 +16,7 @@ BEGIN_MESSAGE_MAP(EditObjectDialogue, CDialogEx)
 	ON_LBN_SELCHANGE(IDC_LISTTEX, &EditObjectDialogue::SelectTexture)	//Function run when a texture is selected in texture list box.
 	ON_LBN_SELCHANGE(IDC_LISTMODEL, &EditObjectDialogue::SelectModel)	//Function run when a model is selected in model list box. 
 	ON_BN_CLICKED(IDCANCEL, &EditObjectDialogue::OnBnClickedCancel)		//Function run when cancel button is clicked.
-	ON_EN_CHANGE(IDC_POSX, &EditObjectDialogue::OnEnChangePosx)
+	ON_EN_CHANGE(IDC_POSX, &EditObjectDialogue::OnEnChangePosx)			//Functions run when edit control box values are changed by user.
 	ON_EN_CHANGE(IDC_POSY, &EditObjectDialogue::OnEnChangePosy)
 	ON_EN_CHANGE(IDC_POSZ, &EditObjectDialogue::OnEnChangePosz)
 	ON_EN_CHANGE(IDC_ROTX, &EditObjectDialogue::OnEnChangeRotx)
