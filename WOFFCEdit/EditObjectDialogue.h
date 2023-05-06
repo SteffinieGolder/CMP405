@@ -60,11 +60,24 @@ public:
 	float positionX, positionY, positionZ, rotateX, rotateY, rotateZ,
 		scaleX, scaleY, scaleZ;							//Values used to set new object positions, scales and rotations
 
+	bool shouldUpdatePosX, shouldUpdatePosY, shouldUpdatePosZ,
+		shouldUpdateRotX, shouldUpdateRotY, shouldUpdateRotZ,
+		shouldUpdateScaX, shouldUpdateScaY, shouldUpdateScaZ = false; //Boolean values for updating values from user input.
+
 	virtual BOOL OnInitDialog() override;				//Dialogue init
 	virtual void PostNcDestroy();						//Post destroy function
 	virtual void SetObjectData(ToolMain* tool);			//Sets the data for this dialogue
 	afx_msg void OnBnClickedOk();						//Run when ok button is clicked
 	afx_msg void OnBnClickedCancel();					//Run when cancel button is clicked
+	afx_msg void OnEnChangePosx();						//Run when user enters value to x position edit control.
+	afx_msg void OnEnChangePosy();						//Run when user enters value to y position edit control.
+	afx_msg void OnEnChangePosz();						//Run when user enters value to z position edit control.
+	afx_msg void OnEnChangeRotx();						//Run when user enters value to x rotation edit control.
+	afx_msg void OnEnChangeRoty();						//Run when user enters value to y rotation edit control.
+	afx_msg void OnEnChangeRotz();						//Run when user enters value to z rotation edit control.
+	afx_msg void OnEnChangeScalex();					//Run when user enters value to x scale edit control.
+	afx_msg void OnEnChangeScaley();					//Run when user enters value to y scale edit control.
+	afx_msg void OnEnChangeScalez();					//Run when user enters value to z scale edit control.
 };
 
 

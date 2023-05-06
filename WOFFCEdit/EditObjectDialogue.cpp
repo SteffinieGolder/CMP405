@@ -16,6 +16,15 @@ BEGIN_MESSAGE_MAP(EditObjectDialogue, CDialogEx)
 	ON_LBN_SELCHANGE(IDC_LISTTEX, &EditObjectDialogue::SelectTexture)	//Function run when a texture is selected in texture list box.
 	ON_LBN_SELCHANGE(IDC_LISTMODEL, &EditObjectDialogue::SelectModel)	//Function run when a model is selected in model list box. 
 	ON_BN_CLICKED(IDCANCEL, &EditObjectDialogue::OnBnClickedCancel)		//Function run when cancel button is clicked.
+	ON_EN_CHANGE(IDC_POSX, &EditObjectDialogue::OnEnChangePosx)
+	ON_EN_CHANGE(IDC_POSY, &EditObjectDialogue::OnEnChangePosy)
+	ON_EN_CHANGE(IDC_POSZ, &EditObjectDialogue::OnEnChangePosz)
+	ON_EN_CHANGE(IDC_ROTX, &EditObjectDialogue::OnEnChangeRotx)
+	ON_EN_CHANGE(IDC_ROTY, &EditObjectDialogue::OnEnChangeRoty)
+	ON_EN_CHANGE(IDC_ROTZ, &EditObjectDialogue::OnEnChangeRotz)
+	ON_EN_CHANGE(IDC_SCALEX, &EditObjectDialogue::OnEnChangeScalex)
+	ON_EN_CHANGE(IDC_SCALEY, &EditObjectDialogue::OnEnChangeScaley)
+	ON_EN_CHANGE(IDC_SCALEZ, &EditObjectDialogue::OnEnChangeScalez)
 END_MESSAGE_MAP()
 
 EditObjectDialogue::EditObjectDialogue(CWnd* pParent)			//constructor used in modeless
@@ -136,34 +145,6 @@ void EditObjectDialogue::ProcessMultipleObjects()
 		std::wstring listBoxEntry = std::to_wstring(m_selectedObjectIDs->at(i));
 		m_selectIDBox.AddString(listBoxEntry.c_str());
 	}
-
-	//Set default values for the edit control boxes to 0.
-	pWnd = GetDlgItem(IDC_POSX);
-	pWnd->SetWindowText(std::to_wstring(0).c_str());
-
-	pWnd = GetDlgItem(IDC_POSY);
-	pWnd->SetWindowText(std::to_wstring(0).c_str());
-
-	pWnd = GetDlgItem(IDC_POSZ);
-	pWnd->SetWindowText(std::to_wstring(0).c_str());
-
-	pWnd = GetDlgItem(IDC_ROTX);
-	pWnd->SetWindowText(std::to_wstring(0).c_str());
-
-	pWnd = GetDlgItem(IDC_ROTY);
-	pWnd->SetWindowText(std::to_wstring(0).c_str());
-
-	pWnd = GetDlgItem(IDC_ROTZ);
-	pWnd->SetWindowText(std::to_wstring(0).c_str());
-
-	pWnd = GetDlgItem(IDC_SCALEX);
-	pWnd->SetWindowText(std::to_wstring(1).c_str());
-
-	pWnd = GetDlgItem(IDC_SCALEY);
-	pWnd->SetWindowText(std::to_wstring(1).c_str());
-
-	pWnd = GetDlgItem(IDC_SCALEZ);
-	pWnd->SetWindowText(std::to_wstring(1).c_str());
 }
 
 //Function to reset values when dialogue window is closed.
@@ -238,18 +219,19 @@ void EditObjectDialogue::EditSingleObject()
 	//Set the new position.
 	m_selectedObject->posX = positionX;
 	
+	
 	pWnd = GetDlgItem(IDC_POSY);
 	pWnd->GetWindowText(edit_PosY);
 	swscanf_s(edit_PosY, L"%f", &positionY);
 	m_selectedObject->posY = positionY;
 	
-
+	
 	pWnd = GetDlgItem(IDC_POSZ);
 	pWnd->GetWindowText(edit_PosZ);
 	swscanf_s(edit_PosZ, L"%f", &positionZ);
 	m_selectedObject->posZ = positionZ;
 	
-
+	
 	///////////////////////////////Rotation changes////////////////////////////////////////
 
 	//Get the edit control box from the window and it's text.
@@ -347,18 +329,21 @@ void EditObjectDialogue::EditMultipleObjects()
 				///////////////////////////////Position changes////////////////////////////////////////
 				pWnd = GetDlgItem(IDC_POSX);
 				pWnd->GetWindowText(edit_PosX);
+
 				swscanf_s(edit_PosX, L"%f", &positionX);
 
-				if (positionX > -50 && positionX < 50)
+				//Update if user has entered a value into the field. 
+				if (shouldUpdatePosX)
 				{
 					m_sceneGraph->at(j).posX = positionX;
 				}
+				
 
 				pWnd = GetDlgItem(IDC_POSY);
 				pWnd->GetWindowText(edit_PosY);
 				swscanf_s(edit_PosY, L"%f", &positionY);
 
-				if (positionY > -50 && positionY < 50)
+				if (shouldUpdatePosY)
 				{
 					m_sceneGraph->at(j).posY = positionY;
 				}
@@ -367,37 +352,47 @@ void EditObjectDialogue::EditMultipleObjects()
 				pWnd->GetWindowText(edit_PosZ);
 				swscanf_s(edit_PosZ, L"%f", &positionZ);
 
-				if (positionZ > -50 && positionZ < 50)
+				if (shouldUpdatePosZ)
 				{
 					m_sceneGraph->at(j).posZ = positionZ;
 				}
+				
 
 				///////////////////////////////Rotation changes////////////////////////////////////////
 				pWnd = GetDlgItem(IDC_ROTX);
 				pWnd->GetWindowText(edit_RotX);
 				swscanf_s(edit_RotX, L"%f", &rotateX);
 
-				if (rotateX >= -360 && rotateX <= 360)
+				if (shouldUpdateRotX)
 				{
-					m_sceneGraph->at(j).rotX = rotateX;
+					if (rotateX >= -360 && rotateX <= 360)
+					{
+						m_sceneGraph->at(j).rotX = rotateX;
+					}
 				}
 
 				pWnd = GetDlgItem(IDC_ROTY);
 				pWnd->GetWindowText(edit_RotY);
 				swscanf_s(edit_RotY, L"%f", &rotateY);
 
-				if (rotateY >= -360 && rotateY <= 360)
+				if (shouldUpdateRotY)
 				{
-					m_sceneGraph->at(j).rotY = rotateY;
+					if (rotateY >= -360 && rotateY <= 360)
+					{
+						m_sceneGraph->at(j).rotY = rotateY;
+					}
 				}
 
 				pWnd = GetDlgItem(IDC_ROTZ);
 				pWnd->GetWindowText(edit_RotZ);
 				swscanf_s(edit_RotZ, L"%f", &rotateZ);
 
-				if (rotateZ >= -360 && rotateZ <= 360)
+				if (shouldUpdateRotZ)
 				{
-					m_sceneGraph->at(j).rotZ = rotateZ;
+					if (rotateZ >= -360 && rotateZ <= 360)
+					{
+						m_sceneGraph->at(j).rotZ = rotateZ;
+					}
 				}
 
 				///////////////////////////////Scale changes////////////////////////////////////////
@@ -405,31 +400,51 @@ void EditObjectDialogue::EditMultipleObjects()
 				pWnd->GetWindowText(edit_ScaleX);
 				swscanf_s(edit_ScaleX, L"%f", &scaleX);
 
-				if (scaleX > 0)
+				if (shouldUpdateScaX)
 				{
-					m_sceneGraph->at(j).scaX = scaleX;
+					if (scaleX > 0)
+					{
+						m_sceneGraph->at(j).scaX = scaleX;
+					}
 				}
 
 				pWnd = GetDlgItem(IDC_SCALEY);
 				pWnd->GetWindowText(edit_ScaleY);
 				swscanf_s(edit_ScaleY, L"%f", &scaleY);
 
-				if (scaleY > 0)
+				if (shouldUpdateScaY)
 				{
-					m_sceneGraph->at(j).scaY = scaleY;
+					if (scaleY > 0)
+					{
+						m_sceneGraph->at(j).scaY = scaleY;
+					}
 				}
 
 				pWnd = GetDlgItem(IDC_SCALEZ);
 				pWnd->GetWindowText(edit_ScaleZ);
 				swscanf_s(edit_ScaleZ, L"%f", &scaleZ);
 
-				if (scaleZ > 0)
+				if (shouldUpdateScaZ)
 				{
-					m_sceneGraph->at(j).scaZ = scaleZ;
+					if (scaleZ > 0)
+					{
+						m_sceneGraph->at(j).scaZ = scaleZ;
+					}
 				}
 			}
 		}
 	}
+
+	//Reset all of the bools.
+	shouldUpdatePosX = false;
+	shouldUpdatePosY = false;
+	shouldUpdatePosZ = false;
+	shouldUpdateRotX = false;
+	shouldUpdateRotY = false;
+	shouldUpdateRotZ = false;
+	shouldUpdateScaX = false;
+	shouldUpdateScaY = false;
+	shouldUpdateScaZ = false;
 
 	m_toolObject->UpdateDisplayList();
 }
@@ -491,4 +506,89 @@ void EditObjectDialogue::OnBnClickedCancel()
 {
 	CDialogEx::OnCancel();
 	End();
+}
+
+//Function which notifies that x position should be updated for all objects in multi select.
+void EditObjectDialogue::OnEnChangePosx()
+{
+	//Only update bool if its concerning multiple objects. 
+	if (!m_selectedObject)
+	{
+		shouldUpdatePosX = true;
+	}
+
+}
+
+//Function which notifies that y position should be updated for all objects in multi select.
+void EditObjectDialogue::OnEnChangePosy()
+{
+	if (!m_selectedObject)
+	{
+		shouldUpdatePosY = true;
+	}
+}
+
+//Function which notifies that Z position should be updated for all objects in multi select.
+void EditObjectDialogue::OnEnChangePosz()
+{
+	if (!m_selectedObject)
+	{
+		shouldUpdatePosZ = true;
+	}
+}
+
+//Function which notifies that x rotation should be updated for all objects in multi select.
+void EditObjectDialogue::OnEnChangeRotx()
+{
+	//Only update bool if its concerning multiple objects. 
+	if (!m_selectedObject)
+	{
+		shouldUpdateRotX = true;
+	}
+}
+
+//Function which notifies that y rotation should be updated for all objects in multi select.
+void EditObjectDialogue::OnEnChangeRoty()
+{
+	if (!m_selectedObject)
+	{
+		shouldUpdateRotY = true;
+	}
+}
+
+//Function which notifies that z rotation should be updated for all objects in multi select.
+void EditObjectDialogue::OnEnChangeRotz()
+{
+	if (!m_selectedObject)
+	{
+		shouldUpdateRotZ = true;
+	}
+}
+
+//Function which notifies that x scale should be updated for all objects in multi select.
+void EditObjectDialogue::OnEnChangeScalex()
+{
+	//Only update bool if its concerning multiple objects. 
+	if (!m_selectedObject)
+	{
+		shouldUpdateScaX = true;
+	}
+}
+
+//Function which notifies that y scale should be updated for all objects in multi select.
+void EditObjectDialogue::OnEnChangeScaley()
+{
+	if (!m_selectedObject)
+	{
+		shouldUpdateScaY = true;
+	}
+}
+
+//Function which notifies that z scale should be updated for all objects in multi select.
+void EditObjectDialogue::OnEnChangeScalez()
+{
+	if (!m_selectedObject)
+	{
+		shouldUpdateScaZ = true;
+	}
 }
